@@ -143,7 +143,7 @@ def xlsx_to_csv(folder_path):
                 csv_path = os.path.join(folder_path,'csv', csv_filename)
                 #lable = os.path.splitext(filename)[0]
                 df = process_csv(df)
-                for i in range(200):
+                for i in range(500):
                     create_date(df,id)
                 # 保存为CSV文件，使用逗号作为分隔符，保留索引
                 df.to_csv(csv_path, index=False, encoding='utf-8-sig')
@@ -219,7 +219,7 @@ def create_date(df,id):
     Y = np.array([id])
     X = np.hstack([df1,df2,df3,df4,df5,Y]).reshape(1,-1)
     # 保存路径
-    csv_file = r"./resultce2.csv"
+    csv_file = r"./result.csv"
 
     # 追加保存
     save_to_csv_append(X, csv_file)
@@ -282,11 +282,11 @@ def one_hot_encode_numeric_category(csv_path, output_path):
     print(f"独热编码完成，结果已保存至: {output_path}")
 # 使用示例
 if __name__ == "__main__":
-    target_directory = r"D:\赵老师\原始数据\信号值"  # 替换为你的XLSX文件目录
+    target_directory = r"G:\原始数据\信号值"  # 替换为你的XLSX文件目录
     #process_xlsx_with_pandas(target_directory)
 
     title = np.arange(206).reshape(1, -1)
-    with open(r'./resultce2.csv', 'w') as f:
+    with open(r'./result.csv', 'w') as f:
         np.savetxt(f, title, delimiter=',', fmt='%.5f')
     xlsx_to_csv(target_directory)
 
