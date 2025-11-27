@@ -31,7 +31,7 @@ Pillow​ >= 9.0.0（图片显示功能）等等。
 
 2.运行train.py文件：
 数据准备
-将best_model.pth文件和train.py文件放在同一目录下，将train.py代码中的第336行中的.csv文件名改为1步骤处理后的.csv文件（或直接使用已给的数据集resultce.csv）
+将best_model.pth文件和train.py文件放在同一目录下，将train.py代码中的第336行中的.csv文件名改为1步骤处理后的.csv文件（或直接使用已给的数据集new_result.csv）
 
 调整以下参数：
 config = {
@@ -59,6 +59,7 @@ config = {
 
 3.运行Model Invocation.py文件：
 准备数据
+确保代码158行的所用文件为new_result.csv
 将训练好的模型权重文件best_model.pth和Model Invocation.py文件放在同一目录下
 根据实际情况修改Model Invocation.py文件中214行代码中的机械手照片文件目录
 
@@ -82,6 +83,7 @@ Model Invocation.py
 【注意事项】
 若图片无法打开，检查文件路径是否包含中文或特殊字符
 调整 predict_transform中的预处理参数（如标准化均值/标准差）
+
 
 
 
