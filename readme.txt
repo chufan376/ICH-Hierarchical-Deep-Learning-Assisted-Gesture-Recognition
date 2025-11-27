@@ -1,89 +1,68 @@
-项目介绍：
+Project Introduction: 
 
+Data acquisition:
+Installation:
+1. Basic environment requirements for running the code: Minimum requirement: Python 3.6; Recommended version: Python 3.7+
+2. Core dependent libraries:
+pandas >= 1.3.0 (for reading/writing Excel/CSV files and data processing)
+numpy >= 1.21.0 (for numerical calculations, Fourier transforms, etc., core operations)
+openpyxl >= 3.0.0 (implicit dependency) (pandas needs to read xlsx files)
+PyTorch >= 1.12.0 [neural network framework (needs to match torchvision version)]
+torchvision >= 0.13.0 (support for image processing and pre-trained models)
+scikit-learn >= 1.1.0 [evaluation metrics (accuracy_score, etc.)]
+matplotlib >= 3.5.0 (for visualization during training process)
+Pillow >= 9.0.0 (for image display functionality) and so on.
+3. Version compatibility notes: PyTorch must match the CUDA version; to prevent dependency conflicts, it is recommended to use virtual environments (venv/conda). 
+Specific operations: 
+If you want to obtain the final result quickly, you can skip step 1 (data processing) and directly use the provided dataset "resultce.csv" file, and run "train.py" and "Model Invocation.py" 
+Steps:
+1. Data preprocessing: Firstly, run the preprocess.py file. Adjust the original data directory in line 285 and the saved processed data directory in line 222 according to the actual situation.
+Firstly, it will read the Excel file, delete the first row of headers, and rename the first eight columns to X0 to X7. Then, when processing the CSV file, only keep the columns X1, X3, X5, X7, and X9, truncate the rows with data to the same length, and remove the columns with too many missing values. Next, perform Fourier analysis on each segment of the signal, calculate the amplitude, energy, and peak frequency features, and then mix in randomly sampled sub-sample data.
+Finally, add an ID label to each sample, and combine all the features to save as a CSV file. The output result is approximately 200 rows of data, each row having over 200 features, including the details of Fourier analysis, original signal statistics, and category encoding.
+Since the Excel file has 24 groups, the final output is a approximately 4801-row data.csv file.
+【Notes】
+If you encounter a PermissionError, check if the file is occupied by another program.
+If the compute_fourier_features fails, ensure that the input signal length > 0.
+Adjust the parameters in process_xlsx_with_pandas according to the requirements (such as sampling rate) 
+2. Run the 'train.py' file:
+Data Preparation
+Place the 'best_model.pth' file and the 'train.py' file in the same directory. Change the '.csv' file name in line 336 of the 'train.py' code to the '.csv' file processed in step 1 (or directly use the given dataset 'new_result.csv') 
+Adjust the following parameters: config = {
+'batch_size': 32,         # Batch size
+'val_split': 0.2,         # Validation set ratio
+'hidden_dims': [256,128,64,32],  # Hidden layer dimensions
+'lr': 0.01,               # Learning rate
+'weight_decay': 1e-5,     # L2 regularization coefficient
+'epochs': 100,            # Training epochs
+'save_path': './best_model.pth'  # Model save path }
 
-数据获得：
-安装：
-1.运行代码的基础环境要求：最低要求：Python 3.6  推荐版本：Python 3.7+
-2.核心依赖库：
-pandas​ >= 1.3.0 （用于Excel/CSV文件读写、数据处理）
-numpy​ >= 1.21.0（数值计算、傅里叶变换等核心运算）
-openpyxl​ >= 3.0.0（隐式依赖）（pandas读取xlsx文件需要）
-PyTorch​ >= 1.12.0【神经网络框架（需与torchvision版本匹配）】
-torchvision​ >= 0.13.0（图像处理和预训练模型支持）
-scikit-learn​ >= 1.1.0【评估指标（accuracy_score等）】
-matplotlib​ >= 3.5.0（训练过程可视化）
-Pillow​ >= 9.0.0（图片显示功能）等等。
-3.版本兼容性注意事项：PyTorch与CUDA版本匹配；依赖冲突预防，建议使用虚拟环境（venv/conda）。
+Run the program and train for 100 rounds (adjust as needed) 
+Output results:
+Training process curve graph: training_curve.png
+Best model weights: best_model.pth
+Validation set evaluation report: classification_report 
+【Notes】
+Adjust the batch_size according to the hardware (reduce it when the GPU memory is insufficient)
+If CUDA runs out of memory, try reducing the batch_size or use --no-cuda
+Adjust hidden_dims and learning_rate to optimize the model performance 
 
-具体操作：
+3. Run the Model Invocation.py file:
+Prepare the data
+Make sure the file used in line 158 of the code is new_result.csv
+Place the trained model weight file best_model.pth and the Model Invocation.py file in the same directory
+Modify the mechanical hand photo file directory in line 214 of the Model Invocation.py file according to the actual situation 
+Modify configuration parameters
+In the function load_trained_model(), adjust the following parameters:
+MODEL_PATH = "./best_model.pth"  # Path for model weights
+NUM_CLASSES = 24                # Number of categories 
+Running prediction 
+# Enter the directory where the code is located in the command line cd /path/to/Model Invocation
 
-若想快速的获取最终结果，可跳过1.数据处理步骤，直接使用我们提供的数据集resultce.csv文件，运行train.py和Model Invocation.py
+# Execute the prediction script Model Invocation.py
 
-步骤：
-1.数据预处理：首先运行preprocess.py文件。根据实际情况调整代码285行的原始数据目录，和222行的处理后数据保存目录。
-首先，它会读取Excel文件，删掉第一行标题，把前八列改名为X0到X7。接着，处理CSV时只保留X1、X3、X5、X7、X9这几列，把有数据的行截断到一样长，去掉空值太多的列。然后对每段信号做傅里叶分析，算出幅度、能量和峰值频率这些特征，再混上随机截取的子样本数据。
-最后给每个样本加个ID标签，把所有特征拼起来存成CSV。输出的结果大概是200行数据，每行有200多个特征，包括傅里叶分析的细节、原始信号统计值和类别编码。
-因Excel文件有24组，故最终输出一个大约4801行数据的.csv文件。
-【注意事项】
-如果遇到 PermissionError，检查文件是否被其他程序占用
-若 compute_fourier_features报错，确保输入信号长度 > 0
-根据需求调整 process_xlsx_with_pandas中的参数（如采样率 sampling_rate）
-
-2.运行train.py文件：
-数据准备
-将best_model.pth文件和train.py文件放在同一目录下，将train.py代码中的第336行中的.csv文件名改为1步骤处理后的.csv文件（或直接使用已给的数据集new_result.csv）
-
-调整以下参数：
-config = {
-    'batch_size': 32,         # 批次大小
-    'val_split': 0.2,         # 验证集比例
-    'hidden_dims': [256,128,64,32],  # 隐藏层维度
-    'lr': 0.01,               # 学习率
-    'weight_decay': 1e-5,     # L2正则化系数
-    'epochs': 100,            # 训练轮数
-    'save_path': './best_model.pth',  # 模型保存路径
-}
-
-运行程序，训练100轮（可根据需要调整）
-
-输出结果：
-训练过程曲线图 training_curve.png
-最佳模型权重 best_model.pth
-验证集评估报告 classification_report
-
-【注意事项】
-根据硬件调整 batch_size（显存不足时减小）
-若 CUDA out of memory，尝试减小 batch_size或使用 --no-cuda
-调整 hidden_dims和 learning_rate优化模型性能
-
-
-3.运行Model Invocation.py文件：
-准备数据
-确保代码158行的所用文件为new_result.csv
-将训练好的模型权重文件best_model.pth和Model Invocation.py文件放在同一目录下
-根据实际情况修改Model Invocation.py文件中214行代码中的机械手照片文件目录
-
-修改配置参数
-在 load_trained_model()中调整以下参数：
-MODEL_PATH = "./best_model.pth"  # 模型权重路径
-NUM_CLASSES = 24                # 类别数量
-
-运行预测
-
-# 在命令行中进入代码所在目录
-cd /path/to/Model Invocation
-
-# 执行预测脚本
-Model Invocation.py
-
-输出结果
-预测结果保存为 prediction_results.csv
-自动弹出预测类别对应的图片（需确保图片路径正确）
-
-【注意事项】
-若图片无法打开，检查文件路径是否包含中文或特殊字符
-调整 predict_transform中的预处理参数（如标准化均值/标准差）
-
-
-
-
+Output result
+The prediction results are saved as "prediction_results.csv"
+Automatically display the corresponding image for the predicted category (make sure the image path is correct) 
+【Notes】
+If the image cannot be opened, check whether the file path contains Chinese characters or special characters.
+Adjust the preprocessing parameters in predict_transform (such as standardization mean/standard deviation)
