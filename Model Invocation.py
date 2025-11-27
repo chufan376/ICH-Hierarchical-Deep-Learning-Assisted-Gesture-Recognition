@@ -211,7 +211,7 @@ if __name__ == "__main__":
     for i in range(10):
         print(f"预测为：{t[result_df['预测类别索引'][i]]}")
         print(f"实际为：{t[int(result_df.iloc[i,205])]}")
-        image_filename = 'G:\原始数据\机械手照片\机械手照片//'+t[result_df["预测类别索引"][i]]+'-前.jpg'  # 例如："data/hand_gesture_05.jpg"
+        image_filename = 'G:\photos of the robotic arm//'+t[result_df["预测类别索引"][i]]+'-back.jpg'  # 例如："data/hand_gesture_05.jpg"
         open_image_by_filename(image_filename)
     #result_df["预测类别名称"] = pred_class_names
 
@@ -226,3 +226,4 @@ if __name__ == "__main__":
     # 5. 打印前5条结果（快速查看）
     #print("\n前5条预测结果：")
     #print(result_df[["预测类别名称"] + [f"{class_name_mapping[i]}_概率" for i in range(NUM_CLASSES)]].head())
+
